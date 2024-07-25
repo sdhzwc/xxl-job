@@ -15,7 +15,11 @@
     <description>Example executor project for spring boot.</description>
     <url>https://www.xuxueli.com/</url>
 
+    <!--  pom版本统一管理  -->
     <properties>
+        <hutool.version>5.8.23</hutool.version>
+        <lombok.version>1.18.24</lombok.version>
+        <fastjson2.version>2.0.25</fastjson2.version>
     </properties>
 
     <dependencyManagement>
@@ -54,12 +58,21 @@
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
-            <version>5.8.23</version>
+            <version>${hutool.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>${lombok.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>${fastjson2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
     </dependencies>
 

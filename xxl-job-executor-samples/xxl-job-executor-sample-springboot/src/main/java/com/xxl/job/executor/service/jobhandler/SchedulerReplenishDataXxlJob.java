@@ -77,17 +77,15 @@ public class SchedulerReplenishDataXxlJob {
             long dayLength = DateUtil.betweenDay(beginDate, endDate, true);
             for (long i = 0; i < (dayLength + 1); i++) {
                 String dateStr = DateUtil.format(DateUtil.offsetDay(beginDate, (int) i), PURE_DATE_PATTERN);
-                long offset = betweenMinute(now, dateStr);
                 String[] paramArr = param_4.split(",");
-                paramArr[param_3 - 1] = String.format("-%s", offset);
+                paramArr[param_3 - 1] = String.format("%s", dateStr);
                 dateList.add(StrUtil.join(",", Arrays.asList(paramArr)));
             }
         } else {
             String[] dateSplit = dateReplace.split(",");
             for (String dateStr : dateSplit) {
-                long offset = betweenMinute(now, dateStr);
                 String[] paramArr = param_4.split(",");
-                paramArr[param_3 - 1] = String.format("-%s", offset);
+                paramArr[param_3 - 1] = String.format("%s", dateStr);
                 dateList.add(StrUtil.join(",", Arrays.asList(paramArr)));
             }
         }
