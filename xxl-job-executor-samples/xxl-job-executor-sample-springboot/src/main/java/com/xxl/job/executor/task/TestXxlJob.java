@@ -1,14 +1,14 @@
 package com.xxl.job.executor.task;
 
 import com.alibaba.fastjson2.JSONObject;
+import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
+import com.xxl.job.executor.core.config.annotation.JobLog;
 import com.xxl.job.executor.core.utils.CustomUtil;
 import com.xxl.job.executor.core.utils.XxlLog;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 
 
 /**
@@ -21,29 +21,24 @@ import javax.annotation.Resource;
 @RestController
 public class TestXxlJob {
 
-    @Resource
-    private CustomUtil customUtil;
-
     /**
-     * 慢病毛利额
+     * 测试job
      */
     @XxlJob("testJob")
     @RequestMapping("testJob")
+    @JobLog("testJob")
     public void testJob() {
-        long startTime = customUtil.getSystemCurrentTime();
-        String jobBeanName = "testJob";
+
         try {
-            JSONObject jobParamJson = customUtil.jobLock(jobBeanName);
+            JSONObject jobParamJson = CustomUtil.getJobParamJsonOne(XxlJobHelper.getJobParam());
+            if ("20240812".equals(jobParamJson.getString("jobHandleTime"))) {
+                System.out.println(1 / 0);
+            }
             // job逻辑处理
             test(jobParamJson);
-            customUtil.jobUnlock(jobBeanName);
-            XxlLog.info(log, String.format("任务：%s redis已清理!!!", jobBeanName));
         } catch (Exception e) {
-            customUtil.jobUnlock(jobBeanName);
-            XxlLog.error(log, String.format("任务：%s 同步异常: ", jobBeanName), e);
+            XxlLog.error(log, String.format("job name：%s , sync exception: ", "testJob"), e);
         }
-        long endTime = customUtil.getSystemCurrentTime();
-        XxlLog.info(log, String.format("任务：%s 同步完成,耗时: %dms", jobBeanName, (endTime - startTime)));
     }
 
 

@@ -30,7 +30,6 @@ import static cn.hutool.core.date.DatePattern.PURE_DATE_PATTERN;
  * @date 2024-07-25 17:15:20
  */
 @Slf4j
-@Component
 public class CustomUtil {
 
     @Value("${spring.profiles.active}")
@@ -110,49 +109,6 @@ public class CustomUtil {
         jsonObject.put("list", jsonList);
         jsonObject.put("redisTimeOut", jsonParam.get("redisTimeOut"));
         return jsonObject;
-    }
-
-
-    /**
-     * 任务上锁
-     *
-     * @param jobBeanName 任务Bean名称
-     * @return {@link JSONObject }
-     */
-    public  JSONObject jobLock(String jobBeanName) {
-        String jobParam = XxlJobHelper.getJobParam();
-        JSONObject jobParamJson = CustomUtil.getJobParamJsonOne(jobParam);
-        String key = jobBeanName + "_" + springProfilesActive;
-        XxlLog.info(log, String.format("任务：%s 方法参数：%s", jobBeanName, jobParam));
-        String value = stringRedisTemplate.opsForValue().get(key);
-        XxlLog.info(log, String.format("任务：%s redis value值：%s", jobBeanName, value));
-        if (StrUtil.isNotBlank(value)) {
-            XxlLog.info(log, "任务：%s 正在进行中,请排队!");
-        } else {
-            jobParamJson.put("key", key);
-            long redisTimeOut = jobParamJson.getLong("redisTimeOut");
-            stringRedisTemplate.opsForValue().set(key, DateUtil.now(), redisTimeOut, TimeUnit.MINUTES);
-        }
-        return jobParamJson;
-    }
-
-    /**
-     * 任务解锁
-     *
-     * @param jobBeanName 任务Bean名称
-     */
-    public  void jobUnlock(String jobBeanName) {
-        String key = jobBeanName + "_" + springProfilesActive;
-        stringRedisTemplate.delete(key);
-    }
-
-    /**
-     * 获取系统当前时间
-     *
-     * @return long
-     */
-    public long getSystemCurrentTime(){
-        return System.currentTimeMillis();
     }
 
 }
