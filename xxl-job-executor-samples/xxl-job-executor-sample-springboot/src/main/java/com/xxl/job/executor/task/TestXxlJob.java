@@ -31,10 +31,6 @@ public class TestXxlJob {
 
         try {
             JSONObject jobParamJson = CustomUtil.getJobParamJsonOne(XxlJobHelper.getJobParam());
-            if ("20240812".equals(jobParamJson.getString("jobHandleTime"))) {
-                System.out.println(1 / 0);
-            }
-            // job逻辑处理
             test(jobParamJson);
         } catch (Exception e) {
             XxlLog.error(log, String.format("job name：%s , sync exception: ", "testJob"), e);
