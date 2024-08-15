@@ -4,22 +4,9 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
-import com.xxl.job.core.context.XxlJobHelper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.stereotype.Component;
-
-
-import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import static cn.hutool.core.date.DatePattern.PURE_DATE_PATTERN;
 
 
@@ -31,11 +18,6 @@ import static cn.hutool.core.date.DatePattern.PURE_DATE_PATTERN;
  */
 @Slf4j
 public class CustomUtil {
-
-    @Value("${spring.profiles.active}")
-    private String springProfilesActive;
-    @Resource
-    private  StringRedisTemplate stringRedisTemplate;
 
     /**
      * 任务参数转换一
@@ -55,60 +37,17 @@ public class CustomUtil {
                     DateTime dateTime = DateUtil.offsetMinute(new Date(), Integer.parseInt(arr[0]));
                     jobHandleTime = DateUtil.format(dateTime, PURE_DATE_PATTERN);
                 }
-                redisTimeOut = Integer.parseInt(arr[1]);
+                if (arr.length > 1) {
+                    redisTimeOut = Integer.parseInt(arr[1]);
+                }
             } catch (Exception e) {
-                XxlLog.error(log, "[CustomDateUtil][getJobParamJsonOne] 任务参数切割异常", e);
+                XxlLog.error(log, "[CustomUtil][getJobParamJsonOne] job param split exception：", e);
             }
         }
         JSONObject jobJson = new JSONObject();
         jobJson.put("jobHandleTime", jobHandleTime);
         jobJson.put("redisTimeOut", redisTimeOut);
         return jobJson;
-    }
-
-
-
-    /**
-     * 任务参数转换
-     *
-     * @param jobParam 任务参数
-     * @return {@link JSONObject}
-     */
-    public static JSONObject getJobParamJsonTwo(String jobParam) {
-
-        JSONArray syncTypeList;
-        JSONObject jsonParam;
-        try {
-            jsonParam = JSON.parseObject(jobParam);
-            syncTypeList = jsonParam.getJSONArray("syncTypeList");
-        } catch (Exception e) {
-            syncTypeList = new JSONArray();
-            XxlLog.error(log, StrUtil.format("参数有问题：{} 异常如下：", jobParam), e);
-            jsonParam = new JSONObject();
-        }
-
-        String now = DateUtil.format(new Date(), PURE_DATE_PATTERN);
-        XxlLog.info(log, StrUtil.format("数据计算时间:{}", now));
-
-        List<JSONObject> jsonList = new ArrayList<>();
-        if (syncTypeList.size() > 0) {
-            syncTypeList.forEach(str -> {
-                JSONObject json = JSON.parseObject(str.toString());
-                // isDoubleCounting 是否重复计算 0-否 1-是
-                Integer offset = json.getInteger("offset");
-                Integer dateType = json.getInteger("dateType");
-                String startTime = DateUtil.format(DateUtil.offsetDay(new Date(), -offset), PURE_DATE_PATTERN);
-                String endTime = DateUtil.format(DateUtil.offsetDay(new Date(), -1), PURE_DATE_PATTERN);
-                json.put("startTime", startTime);
-                json.put("endTime", endTime);
-                json.put("dateType", dateType);
-                jsonList.add(json);
-            });
-        }
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("list", jsonList);
-        jsonObject.put("redisTimeOut", jsonParam.get("redisTimeOut"));
-        return jsonObject;
     }
 
 }
