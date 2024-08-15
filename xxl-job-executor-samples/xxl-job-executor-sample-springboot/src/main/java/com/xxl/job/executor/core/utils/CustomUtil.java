@@ -27,22 +27,29 @@ public class CustomUtil {
      */
     public static JSONObject getJobParamJsonOne(String jobParam) {
 
-        String jobHandleTime = DateUtil.format(new Date(), PURE_DATE_PATTERN);
+        String jobHandleTime;
+        int offset = -30;
         int redisTimeOut = 40;
         if (StrUtil.isNotBlank(jobParam)) {
+            String[] arr = jobParam.split(",");
+            String offsetOrDate = arr[0];
+            // offset or date
             try {
-                String[] arr = jobParam.split(",");
-                boolean isNumber = NumberUtil.isNumber(arr[0]);
-                if (isNumber){
-                    DateTime dateTime = DateUtil.offsetMinute(new Date(), Integer.parseInt(arr[0]));
-                    jobHandleTime = DateUtil.format(dateTime, PURE_DATE_PATTERN);
-                }
-                if (arr.length > 1) {
-                    redisTimeOut = Integer.parseInt(arr[1]);
-                }
+                DateTime dateTime = DateUtil.parse(offsetOrDate);
+                jobHandleTime = DateUtil.format(dateTime, PURE_DATE_PATTERN);
             } catch (Exception e) {
-                XxlLog.error(log, "[CustomUtil][getJobParamJsonOne] job param split exception：", e);
+                DateTime dateTime = DateUtil.offsetMinute(new Date(), Integer.parseInt(offsetOrDate));
+                jobHandleTime = DateUtil.format(dateTime, PURE_DATE_PATTERN);
             }
+            // redis lock time
+            try {
+                redisTimeOut = Integer.parseInt(arr[1]);
+            } catch (Exception ignored) {
+                // default lock time
+            }
+        }else {
+            DateTime dateTime = DateUtil.offsetMinute(new Date(), offset);
+            jobHandleTime = DateUtil.format(dateTime, PURE_DATE_PATTERN);
         }
         JSONObject jobJson = new JSONObject();
         jobJson.put("jobHandleTime", jobHandleTime);
