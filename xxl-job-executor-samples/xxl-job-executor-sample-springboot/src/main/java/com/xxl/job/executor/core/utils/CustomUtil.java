@@ -2,11 +2,12 @@ package com.xxl.job.executor.core.utils;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.NumberUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+
 import java.util.Date;
+
 import static cn.hutool.core.date.DatePattern.PURE_DATE_PATTERN;
 
 
@@ -47,7 +48,7 @@ public class CustomUtil {
             } catch (Exception ignored) {
                 // default lock time
             }
-        }else {
+        } else {
             DateTime dateTime = DateUtil.offsetMinute(new Date(), offset);
             jobHandleTime = DateUtil.format(dateTime, PURE_DATE_PATTERN);
         }
