@@ -36,7 +36,7 @@ public class CustomUtil {
             String offsetOrDate = arr[0];
             // offset or date
             try {
-                DateTime dateTime = DateUtil.parse(offsetOrDate);
+                DateTime dateTime = DateUtil.parse(offsetOrDate, PURE_DATE_PATTERN);
                 jobHandleTime = DateUtil.format(dateTime, PURE_DATE_PATTERN);
             } catch (Exception e) {
                 DateTime dateTime = DateUtil.offsetMinute(new Date(), Integer.parseInt(offsetOrDate));

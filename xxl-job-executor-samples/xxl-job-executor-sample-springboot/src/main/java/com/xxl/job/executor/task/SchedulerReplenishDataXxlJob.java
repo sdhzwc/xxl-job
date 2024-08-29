@@ -49,7 +49,7 @@ public class SchedulerReplenishDataXxlJob {
         if (arr.length != 5) {
             XxlLog.info(log, "-------- 程序缺少必要参数,请检查填写是否正确！！！ ---------");
         }
-        // bean名称#[开始时间,结束时间]#推算时间用第几个字段#参数#传递具体日期or偏移量方式  例如：taskJob#[20230101]#2#a,-22,4#1
+        // bean名称#[开始时间,结束时间]#推算时间用第几个字段#参数#传递具体日期or偏移量方式  例如：testJob#[20230101]#1#-22,4#2
         String param_1 = arr[0]; // bean名称
         String param_2 = arr[1]; // [开始时间,结束时间] 例如[20230101],[20230101,20230304],[20230101~20230105]
         int param_3 = Integer.parseInt(arr[2]); // 推算时间用第几个字段
@@ -78,26 +78,14 @@ public class SchedulerReplenishDataXxlJob {
             long dayLength = DateUtil.betweenDay(beginDate, endDate, true);
             for (long i = 0; i < (dayLength + 1); i++) {
                 String dateStr = DateUtil.format(DateUtil.offsetDay(beginDate, (int) i), PURE_DATE_PATTERN);
-                long offset = betweenMinute(now, dateStr);
-                String[] paramArr = param_4.split(",");
-                if ("1".equals(param_5)){
-                    paramArr[param_3 - 1] = String.format("%s", dateStr);
-                } else {
-                    paramArr[param_3 - 1] = String.format("-%s", offset);
-                }
-                dateList.add(StrUtil.join(",", Arrays.asList(paramArr)));
+                List<String> paramList = getParamList(param_3, param_4, param_5, now, dateStr);
+                dateList.add(StrUtil.join(",", paramList));
             }
         } else {
             String[] dateSplit = dateReplace.split(",");
             for (String dateStr : dateSplit) {
-                long offset = betweenMinute(now, dateStr);
-                String[] paramArr = param_4.split(",");
-                if ("1".equals(param_5)){
-                    paramArr[param_3 - 1] = String.format("%s", dateStr);
-                } else {
-                    paramArr[param_3 - 1] = String.format("-%s", offset);
-                }
-                dateList.add(StrUtil.join(",", Arrays.asList(paramArr)));
+                List<String> paramList = getParamList(param_3, param_4, param_5, now, dateStr);
+                dateList.add(StrUtil.join(",", paramList));
             }
         }
 
@@ -112,7 +100,20 @@ public class SchedulerReplenishDataXxlJob {
     public static long betweenMinute(Date now, String dateStr) {
         String format = String.format("%s%s", dateStr, DateUtil.format(now, PURE_TIME_PATTERN));
         DateTime startDate = DateUtil.parse(format);
-        return DateUtil.between(startDate, now, DateUnit.MINUTE);
+        int compare = DateUtil.compare(startDate, now);
+        long between = DateUtil.between(startDate, now, DateUnit.MINUTE);
+        return compare > 0 ? between : -between;
+    }
+
+    public static List<String> getParamList(int param_3, String param_4, String param_5, Date now, String dateStr) {
+        long offset = betweenMinute(now, dateStr);
+        String[] paramArr = param_4.split(",");
+        if ("1".equals(param_5)) {
+            paramArr[param_3 - 1] = String.format("%s", dateStr);
+        } else {
+            paramArr[param_3 - 1] = String.format("%s", offset);
+        }
+        return Arrays.asList(paramArr);
     }
 
 
