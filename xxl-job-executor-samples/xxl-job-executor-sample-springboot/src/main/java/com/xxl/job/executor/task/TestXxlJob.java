@@ -3,7 +3,7 @@ package com.xxl.job.executor.task;
 import com.alibaba.fastjson2.JSONObject;
 import com.xxl.job.core.context.XxlJobHelper;
 import com.xxl.job.core.handler.annotation.XxlJob;
-import com.xxl.job.executor.core.config.annotation.JobLog;
+import com.xxl.job.executor.core.config.annotation.JobParam;
 import com.xxl.job.executor.core.utils.CustomUtil;
 import com.xxl.job.executor.core.utils.XxlLog;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ public class TestXxlJob {
      */
     @XxlJob("testJob")
     @RequestMapping("testJob")
-    @JobLog("testJob")
+    @JobParam("testJob")
     public void testJob() {
 
         try {

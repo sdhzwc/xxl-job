@@ -4,7 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.xxl.job.core.context.XxlJobHelper;
-import com.xxl.job.executor.core.config.annotation.JobLog;
+import com.xxl.job.executor.core.config.annotation.JobParam;
 import com.xxl.job.executor.core.utils.CustomUtil;
 import com.xxl.job.executor.core.utils.XxlLog;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * job log aspect
+ * job param aspect
  *
  * @author wuchao
  * @date 2024-08-13 14:01:05
@@ -35,21 +35,19 @@ import java.util.concurrent.TimeUnit;
 @Aspect
 @Component
 @Slf4j
-public class JobLogAspect {
+public class JobParamAspect {
 
     @Value("${spring.profiles.active}")
     private String springProfilesActive;
     @Resource
     private StringRedisTemplate stringRedisTemplate;
 
-
     /**
-     * job log point cut
+     * job param point cut
      */
-    @Pointcut("@annotation(com.xxl.job.executor.core.config.annotation.JobLog)")
-    public void jobLogPointCut() {
+    @Pointcut("@annotation(com.xxl.job.executor.core.config.annotation.JobParam)")
+    public void jobParamPointCut() {
     }
-
 
     /**
      * before
@@ -70,7 +68,7 @@ public class JobLogAspect {
         }
         jobParamJson.put("key", key);
         long redisTimeOut = jobParamJson.getLong("redisTimeOut");
-        stringRedisTemplate.opsForValue().set(key, DateUtil.now(), redisTimeOut, TimeUnit.MINUTES);
+        stringRedisTemplate.opsForValue().set(key, DateUtil.now(), redisTimeOut, getRedisTimeUnit(joinPoint));
         return null;
     }
 
@@ -79,7 +77,7 @@ public class JobLogAspect {
      *
      * @param joinPoint joinPoint
      */
-    @AfterReturning(value = "jobLogPointCut()")
+    @AfterReturning(value = "jobParamPointCut()")
     public void afterReturning(JoinPoint joinPoint) {
         String jobName = getJobName(joinPoint);
         String key = jobName + "_" + springProfilesActive;
@@ -92,7 +90,7 @@ public class JobLogAspect {
      *
      * @param joinPoint joinPoint
      */
-    @AfterThrowing(value = "jobLogPointCut()", throwing = "e")
+    @AfterThrowing(value = "jobParamPointCut()", throwing = "e")
     public void afterThrowing(JoinPoint joinPoint, Exception e) {
         String jobName = getJobName(joinPoint);
         String key = jobName + "_" + springProfilesActive;
@@ -101,14 +99,14 @@ public class JobLogAspect {
     }
 
     /**
-     * log execution time
+     * job execution time
      *
      * @param joinPoint joinPoint
      * @return {@link Object }
      * @throws Throwable Throwable
      */
-    @Around(value = "jobLogPointCut()")
-    public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around(value = "jobParamPointCut()")
+    public Object jobExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = getJobName(joinPoint);
         long start = System.currentTimeMillis();
         String before = before(joinPoint);
@@ -121,20 +119,18 @@ public class JobLogAspect {
         return proceed;
     }
 
-
     /**
-     * get annotation log
+     * get job param
      *
      * @param joinPoint joinPoint
-     * @return {@link JobLog }
+     * @return {@link JobParam }
      */
-    private JobLog getAnnotationLog(JoinPoint joinPoint) {
+    private JobParam getJobParam(JoinPoint joinPoint) {
         Signature signature = joinPoint.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
-        return method == null ? null : method.getAnnotation(JobLog.class);
+        return method == null ? null : method.getAnnotation(JobParam.class);
     }
-
 
     /**
      * get job name
@@ -143,8 +139,19 @@ public class JobLogAspect {
      * @return {@link String }
      */
     private String getJobName(JoinPoint joinPoint) {
-        JobLog annotationLog = getAnnotationLog(joinPoint);
-        return annotationLog == null ? null : annotationLog.value();
+        JobParam jobParam = getJobParam(joinPoint);
+        return jobParam == null ? null : jobParam.value();
+    }
+
+    /**
+     * get redis time out timeUnit
+     *
+     * @param joinPoint joinPoint
+     * @return {@link String }
+     */
+    private TimeUnit getRedisTimeUnit(JoinPoint joinPoint) {
+        JobParam jobParam = getJobParam(joinPoint);
+        return jobParam == null ? TimeUnit.MINUTES : jobParam.redisTimeUnit();
     }
 
 }
