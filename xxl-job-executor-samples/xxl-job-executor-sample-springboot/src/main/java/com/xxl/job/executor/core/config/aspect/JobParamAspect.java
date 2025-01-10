@@ -56,7 +56,7 @@ public class JobParamAspect {
      */
     public String before(JoinPoint joinPoint) {
         String jobName = getJobName(joinPoint);
-        String jobParam = XxlJobHelper.getJobParam();
+        String jobParam = CustomUtil.getXxlJobParam("jobParam");
         JSONObject jobParamJson = CustomUtil.getJobParamJsonOne(jobParam);
         String key = jobName + "_" + springProfilesActive;
         XxlLog.info(log, String.format("job name：%s , job param：%s", jobName, jobParam));
