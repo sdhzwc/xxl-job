@@ -10,8 +10,8 @@
         <a href="https://github.com/xuxueli/xxl-job/actions">
             <img src="https://github.com/xuxueli/xxl-job/workflows/Java%20CI/badge.svg" >
         </a>
-        <a href="https://maven-badges.herokuapp.com/maven-central/com.xuxueli/xxl-job/">
-            <img src="https://maven-badges.herokuapp.com/maven-central/com.xuxueli/xxl-job/badge.svg" >
+        <a href="https://maven-badges.herokuapp.com/maven-central/com.xuxueli/xxl-job-core/">
+            <img src="https://maven-badges.herokuapp.com/maven-central/com.xuxueli/xxl-job-core/badge.svg" >
         </a>
         <a href="https://github.com/xuxueli/xxl-job/releases">
          <img src="https://img.shields.io/github/release/xuxueli/xxl-job.svg" >
@@ -46,9 +46,14 @@ XXL-JOB is an open source and free project, with its ongoing development made po
 XXL-JOB 是一个开源且免费项目，其正在进行的开发完全得益于支持者的支持。开源不易，[前往赞助项目开发](https://www.xuxueli.com/page/donate.html )
 
 <!-- supporter start -->
-<h5 style="color: silver;" >金牌赞助方</h5>
+<h3 style="color: #E6BE8A;" >金牌赞助方</h3>
+
+<a href="https://www.aliyun.com/product/aliware/mse?utm_content=g_10004013" title="jetbrains" target="_blank" >
+    <img width="150px" src="http://www.xuxueli.com/page/static/images/logo_aliyun2.png" >
+</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://www.jetbrains.com/idea/?from=xuxueli.com" title="jetbrains" target="_blank" >
-    <img width="55px" src="http://www.xuxueli.com/page/static/images/logo_intellij.jpeg" >
+    <img width="60px" src="http://www.xuxueli.com/page/static/images/logo_intellij.jpeg" >
 </a>
 <!-- supporter end -->
 
@@ -93,7 +98,7 @@ XXL-JOB 是一个开源且免费项目，其正在进行的开发完全得益于
 - 28、推送maven中央仓库: 将会把最新稳定版推送到maven中央仓库, 方便用户接入和使用;
 - 29、运行报表：支持实时查看运行数据，如任务数量、调度次数、执行器数量等；以及调度报表，如调度日期分布图，调度成功分布图等；
 - 30、全异步：任务调度流程全异步化设计实现，如异步调度、异步运行、异步回调等，有效对密集调度进行流量削峰，理论上支持任意时长任务的运行；
-- 31、跨语言：调度中心与执行器提供语言无关的 RESTful API 服务，第三方任意语言可据此对接调度中心或者实现执行器。除此之外，还提供了 “多任务模式”和“httpJobHandler”等其他跨语言方案；
+- 31、跨语言/OpenAPI：调度中心与执行器提供语言无关的 OpenApi（RESTful 格式），第三方任意语言可据此对接调度中心或者实现执行器，实现多语言支持。除此之外，还提供了 “多任务模式”和“httpJobHandler”等其他跨语言方案；
 - 32、国际化：调度中心支持国际化设置，提供中文、英文两种可选语言，默认为中文；
 - 33、容器化：提供官方docker镜像，并实时更新推送dockerhub，进一步实现产品开箱即用；
 - 34、线程池隔离：调度线程池进行隔离拆分，慢任务自动降级进入"Slow"线程池，避免耗尽调度线程，提高系统稳定性；
@@ -827,6 +832,8 @@ XXL-JOB 是一个开源且免费项目，其正在进行的开发完全得益于
     - 686、广州博依特智能信息科技有限公司
     - 687、河南宠呦呦信息技术有限公司
     - 688、陕西星邑空间技术有限公司
+    - 689、广东西欧克实业有限公司
+    - 690、唱吧麦颂KTV
     - ……
 
 > 更多接入的公司，欢迎在 [登记地址](https://github.com/xuxueli/xxl-job/issues/1 ) 登记，登记仅仅为了产品推广。
